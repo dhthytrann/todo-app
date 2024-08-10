@@ -1,5 +1,7 @@
-import { CreateTodoForm } from '@/client/components/CreateTodoForm'
-import { TodoList } from '@/client/components/TodoList'
+import { CreateTodoForm } from '@/client/components/CreateTodoForm';
+import { TodoList } from '@/client/components/TodoList';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
+import { useState } from 'react';
 
 /**
  * QUESTION 6:
@@ -17,6 +19,7 @@ import { TodoList } from '@/client/components/TodoList'
  */
 
 const Index = () => {
+  const [status, setStatus] = useState<string>('all');
   return (
     <main className="mx-auto w-[480px] pt-12">
       <div className="rounded-12 bg-white p-8 shadow-sm">
@@ -25,7 +28,38 @@ const Index = () => {
         </h1>
 
         <div className="pt-10">
-          <TodoList />
+          <Tabs defaultValue="all">
+            <TabsList className="flex gap-2 ">
+              <TabsTrigger
+                value="all"
+                className="data-[state=active]:bg-gray-700 data-[state=active]:text-white rounded-[30px] border border-gray-200 px-[24px] py-[12px] text-gray-700 font-bold text-[14px]"
+              >
+                All
+              </TabsTrigger>
+              <TabsTrigger
+                value="pending"
+                className="data-[state=active]:bg-gray-700 data-[state=active]:text-white rounded-[30px] border border-gray-200 px-[24px] py-[12px] text-gray-700 font-bold text-[14px]"
+              >
+                Pending
+              </TabsTrigger>
+              <TabsTrigger
+                value="completed"
+                className="data-[state=active]:bg-gray-700 data-[state=active]:text-white rounded-[30px] border border-gray-200 px-[24px] py-[12px] text-gray-700 font-bold text-[14px]"
+              >
+                Completed
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent className="pt-10" value="all">
+              <TodoList status="all" />
+            </TabsContent>
+            <TabsContent className="pt-10" value="pending">
+              <TodoList status="pending" />
+            </TabsContent>
+            <TabsContent className="pt-10" value="completed">
+              <TodoList status="completed" />
+            </TabsContent>
+          </Tabs>
         </div>
 
         <div className="pt-10">
@@ -33,7 +67,7 @@ const Index = () => {
         </div>
       </div>
     </main>
-  )
-}
+  );
+};
 
-export default Index
+export default Index;

@@ -1,8 +1,10 @@
-import type { SVGProps } from 'react'
+import type { SVGProps } from 'react';
 
-import * as Checkbox from '@radix-ui/react-checkbox'
+import * as Checkbox from '@radix-ui/react-checkbox';
 
-import { api } from '@/utils/client/api'
+import { api } from '@/utils/client/api';
+
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 
 /**
  * QUESTION 3:
@@ -63,34 +65,80 @@ import { api } from '@/utils/client/api'
  *  - https://auto-animate.formkit.com
  */
 
-export const TodoList = () => {
+interface TodoListProps {
+  status: 'all' | 'pending' | 'completed';
+}
+
+export const TodoList = ({ status }: TodoListProps) => {
   const { data: todos = [] } = api.todo.getAll.useQuery({
-    statuses: ['completed', 'pending'],
-  })
+    statuses: status === 'all' ? ['pending', 'completed'] : [status],
+  });
+
+  const apiContext = api.useContext();
+
+  const { mutate: updateTodoStatus } = api.todoStatus.update.useMutation({
+    onSuccess: () => {
+      apiContext.todo.getAll.refetch();
+    },
+  });
+  const { mutate: deleteTodo } = api.todo.delete.useMutation({
+    onSuccess: () => {
+      apiContext.todo.getAll.refetch();
+    },
+  });
+
+  const [todosRef] = useAutoAnimate<HTMLUListElement>();
 
   return (
-    <ul className="grid grid-cols-1 gap-y-3">
+    <ul ref={todosRef} className="grid grid-cols-1 gap-y-3">
       {todos.map((todo) => (
         <li key={todo.id}>
-          <div className="flex items-center rounded-12 border border-gray-200 px-4 py-3 shadow-sm">
+          <div
+            className={`flex items-center justify-between rounded-12 border border-gray-200 px-4 py-3 shadow-sm ${
+              todo.status === 'completed' && 'bg-gray-50'
+            }`}
+          >
             <Checkbox.Root
               id={String(todo.id)}
+              checked={todo.status === 'completed'}
               className="flex h-6 w-6 items-center justify-center rounded-6 border border-gray-300 focus:border-gray-700 focus:outline-none data-[state=checked]:border-gray-700 data-[state=checked]:bg-gray-700"
+              onCheckedChange={(checked) => {
+                updateTodoStatus({
+                  todoId: todo.id,
+                  status: checked ? 'completed' : 'pending',
+                });
+              }}
             >
               <Checkbox.Indicator>
                 <CheckIcon className="h-4 w-4 text-white" />
               </Checkbox.Indicator>
             </Checkbox.Root>
 
-            <label className="block pl-3 font-medium" htmlFor={String(todo.id)}>
+            <label
+              className={`block pl-3 font-medium flex-1 ${
+                todo.status === 'completed' ? 'line-through text-gray-500' : ''
+              }`}
+              htmlFor={String(todo.id)}
+            >
               {todo.body}
             </label>
+            <button
+              onClick={() =>
+                deleteTodo({
+                  id: todo.id,
+                })
+              }
+              className="text-gray-700"
+              aria-label="Delete todo"
+            >
+              <XMarkIcon className="w-6 h-6" />
+            </button>
           </div>
         </li>
       ))}
     </ul>
-  )
-}
+  );
+};
 
 const XMarkIcon = (props: SVGProps<SVGSVGElement>) => {
   return (
@@ -108,8 +156,8 @@ const XMarkIcon = (props: SVGProps<SVGSVGElement>) => {
         d="M6 18L18 6M6 6l12 12"
       />
     </svg>
-  )
-}
+  );
+};
 
 const CheckIcon = (props: SVGProps<SVGSVGElement>) => {
   return (
@@ -127,5 +175,5 @@ const CheckIcon = (props: SVGProps<SVGSVGElement>) => {
         d="M4.5 12.75l6 6 9-13.5"
       />
     </svg>
-  )
-}
+  );
+};
