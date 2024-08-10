@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState } from 'react'
 
-import { api } from '@/utils/client/api';
+import { api } from '@/utils/client/api'
 
 /**
  * QUESTION 1:
@@ -24,28 +24,26 @@ import { api } from '@/utils/client/api';
  */
 
 export const CreateTodoForm = () => {
-  const [todoBody, setTodoBody] = useState('');
+  const [todoBody, setTodoBody] = useState('')
 
-  const apiContext = api.useContext();
+  const apiContext = api.useContext()
 
-  const {
-    mutate: createTodo,
-    isLoading: isCreatingTodo,
-  } = api.todo.create.useMutation({
-    onSuccess: () => {
-      apiContext.todo.getAll.refetch();
-    },
-  });
+  const { mutate: createTodo, isLoading: isCreatingTodo } =
+    api.todo.create.useMutation({
+      onSuccess: () => {
+        apiContext.todo.getAll.refetch()
+      },
+    })
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault()
     if (!isCreatingTodo && todoBody.trim()) {
       createTodo({
         body: todoBody,
-      });
-      setTodoBody('');
+      })
+      setTodoBody('')
     }
-  };
+  }
 
   return (
     <form
@@ -62,7 +60,7 @@ export const CreateTodoForm = () => {
         placeholder="Add todo"
         value={todoBody}
         onChange={(e) => {
-          setTodoBody(e.target.value);
+          setTodoBody(e.target.value)
         }}
         className="flex-1 px-4 text-base placeholder:text-gray-400 focus:outline-none"
       />
@@ -73,15 +71,15 @@ export const CreateTodoForm = () => {
         onClick={() => {
           createTodo({
             body: todoBody,
-          });
-          setTodoBody('');
+          })
+          setTodoBody('')
         }}
-        className="bg-gray-700 text-white px-[20px] py-[8px] gap-[8px] rounded-[10px]  text-sm font-bold"
+        className="gap-[8px] rounded-[10px] bg-gray-700 px-[20px] py-[8px] text-sm  font-bold text-white"
       >
         Add
       </button>
     </form>
-  );
-};
+  )
+}
 
-const TODO_INPUT_ID = 'todo-input-id';
+const TODO_INPUT_ID = 'todo-input-id'

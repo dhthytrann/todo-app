@@ -1,10 +1,9 @@
-import type { SVGProps } from 'react';
+import type { SVGProps } from 'react'
 
-import * as Checkbox from '@radix-ui/react-checkbox';
+import * as Checkbox from '@radix-ui/react-checkbox'
+import { useAutoAnimate } from '@formkit/auto-animate/react'
 
-import { api } from '@/utils/client/api';
-
-import { useAutoAnimate } from '@formkit/auto-animate/react';
+import { api } from '@/utils/client/api'
 
 /**
  * QUESTION 3:
@@ -66,28 +65,28 @@ import { useAutoAnimate } from '@formkit/auto-animate/react';
  */
 
 interface TodoListProps {
-  status: 'all' | 'pending' | 'completed';
+  status: 'all' | 'pending' | 'completed'
 }
 
 export const TodoList = ({ status }: TodoListProps) => {
   const { data: todos = [] } = api.todo.getAll.useQuery({
     statuses: status === 'all' ? ['pending', 'completed'] : [status],
-  });
+  })
 
-  const apiContext = api.useContext();
+  const apiContext = api.useContext()
 
   const { mutate: updateTodoStatus } = api.todoStatus.update.useMutation({
     onSuccess: () => {
-      apiContext.todo.getAll.refetch();
+      apiContext.todo.getAll.refetch()
     },
-  });
+  })
   const { mutate: deleteTodo } = api.todo.delete.useMutation({
     onSuccess: () => {
-      apiContext.todo.getAll.refetch();
+      apiContext.todo.getAll.refetch()
     },
-  });
+  })
 
-  const [todosRef] = useAutoAnimate<HTMLUListElement>();
+  const [todosRef] = useAutoAnimate<HTMLUListElement>()
 
   return (
     <ul ref={todosRef} className="grid grid-cols-1 gap-y-3">
@@ -106,7 +105,7 @@ export const TodoList = ({ status }: TodoListProps) => {
                 updateTodoStatus({
                   todoId: todo.id,
                   status: checked ? 'completed' : 'pending',
-                });
+                })
               }}
             >
               <Checkbox.Indicator>
@@ -115,8 +114,8 @@ export const TodoList = ({ status }: TodoListProps) => {
             </Checkbox.Root>
 
             <label
-              className={`block pl-3 font-medium flex-1 ${
-                todo.status === 'completed' ? 'line-through text-gray-500' : ''
+              className={`block flex-1 pl-3 font-medium ${
+                todo.status === 'completed' ? 'text-gray-500 line-through' : ''
               }`}
               htmlFor={String(todo.id)}
             >
@@ -131,14 +130,14 @@ export const TodoList = ({ status }: TodoListProps) => {
               className="text-gray-700"
               aria-label="Delete todo"
             >
-              <XMarkIcon className="w-6 h-6" />
+              <XMarkIcon className="h-6 w-6" />
             </button>
           </div>
         </li>
       ))}
     </ul>
-  );
-};
+  )
+}
 
 const XMarkIcon = (props: SVGProps<SVGSVGElement>) => {
   return (
@@ -156,8 +155,8 @@ const XMarkIcon = (props: SVGProps<SVGSVGElement>) => {
         d="M6 18L18 6M6 6l12 12"
       />
     </svg>
-  );
-};
+  )
+}
 
 const CheckIcon = (props: SVGProps<SVGSVGElement>) => {
   return (
@@ -175,5 +174,5 @@ const CheckIcon = (props: SVGProps<SVGSVGElement>) => {
         d="M4.5 12.75l6 6 9-13.5"
       />
     </svg>
-  );
-};
+  )
+}
